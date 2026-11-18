@@ -7,10 +7,15 @@ public sealed class SahteDosyaYazici : IDosyaYazici
 {
     public string? YazilanYol { get; private set; }
     public string? YazilanIcerik { get; private set; }
-    public bool HataFirlatsin { get; set; }
+    public bool HataFirlatsin { get; set; }   // beklenen hata (IOException)
+    public bool BugFirlatsin { get; set; }    // kodumuzdaki hata gibi (InvalidOperationException)
 
     public void Yaz(string yol, string icerik)
     {
+        if (BugFirlatsin)
+        {
+            throw new InvalidOperationException("Sahte bug");
+        }
         if (HataFirlatsin)
         {
             throw new IOException("Sahte: dosya kilitli");

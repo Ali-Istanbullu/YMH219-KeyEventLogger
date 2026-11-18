@@ -1,12 +1,12 @@
 ﻿; ================================================================================
-;  KeyEventLogger kurulum betigi (Inno Setup) - Adim 3, R3 (AliBird betiginden uyarlandi)
+;  KeyEventLogger kurulum betigi (Inno Setup)
 ;
 ;  Once uygulamayi yayinla (repo kokunden):
 ;    dotnet publish src/KeyEventLogger.WinForms -c Release -r win-x64 --self-contained false -o publish/KeyEventLogger
 ;  Sonra bu dosyayi Inno Setup ile derle (ISCC.exe installer\KeyEventLogger.iss).
 ;  Cikti: installer\Output\KeyEventLogger-Kurulum-1.0.0.exe  (repoya girmez, GitHub Releases'e yuklenir)
 ;
-;  Requirement (R3): .NET 10 Desktop Runtime (x64) pakete GOMULMEZ (kurulum kucuk kalir).
+;  Requirement: .NET 10 Desktop Runtime (x64) pakete GOMULMEZ (kurulum kucuk kalir).
 ;  Kurulum runtime'i kontrol eder; yoksa Microsoft'tan indirir ve sessizce kurar.
 ;  Indirme ya da kurulum basarisiz olursa hata gosterilir ve kurulum ilerlemez.
 ; ================================================================================
@@ -124,7 +124,7 @@ begin
   end;
 end;
 
-// "Kur" dugmesine basilinca: runtime yoksa indir + kur. Hata olursa kurulum ilerlemez (R3).
+// "Kur" dugmesine basilinca: runtime yoksa indir + kur. Hata olursa kurulum ilerlemez.
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   Hata: String;

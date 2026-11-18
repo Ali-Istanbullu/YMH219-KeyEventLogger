@@ -2,7 +2,7 @@ using KeyEventLogger.Core.Services;
 
 namespace KeyEventLogger.Core.Tests.Services;
 
-// Dosya hatasinin sebebi kullaniciya anlasilir dille soylenmeli (CK20).
+// Dosya hatasinin sebebi kullaniciya anlasilir dille soylenmeli.
 [TestClass]
 public sealed class DosyaHatasiAciklayiciTestleri
 {

@@ -24,7 +24,7 @@ public sealed class UygulamaYollari : IUygulamaYollari
 
     public string GunlukKlasoru()
     {
-        // Klasor yoksa olusturur, varsa hicbir sey yapmaz. Olusturulamazsa exception; cagiran yakalar (R4).
+        // Klasor yoksa olusturur, varsa hicbir sey yapmaz. Olusturulamazsa exception; cagiran yakalar.
         string klasor = Path.Combine(_kokKlasor, GunlukKlasorAdi);
         Directory.CreateDirectory(klasor);
         return klasor;

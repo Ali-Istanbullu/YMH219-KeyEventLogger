@@ -4,7 +4,7 @@ using KeyEventLogger.Core.Errors;
 namespace KeyEventLogger.Core.Services;
 
 // Tek sorumlulugu: dosya hatasinin turune bakip kullaniciya NE OLDUGUNU ve NE YAPMASI
-// GEREKTIGINI soylemek (S). CK20.
+// GEREKTIGINI soylemek (S).
 // "Kayıtlar dosyaya yazılamadı." tek basina yetmez: kullanici sebebini bilirse duzeltebilir.
 public sealed class DosyaHatasiAciklayici : IDosyaHatasiAciklayici
 {

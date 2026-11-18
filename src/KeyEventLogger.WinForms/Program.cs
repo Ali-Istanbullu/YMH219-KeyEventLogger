@@ -18,7 +18,7 @@ namespace KeyEventLogger.WinForms;
 //
 //  Tek sorumlulugu: uygulamayi ayaga kaldirmak.
 //   1) Genel hata yakalayiciyi devreye almak
-//   2) Siniflari birbirine baglamak: DI container SADECE burada kurulur (R2)
+//   2) Siniflari birbirine baglamak: DI container SADECE burada kurulur
 //   3) Pencereyi acmak, acilis/kapanisi loglamak
 // ================================================================================
 internal static class Program
@@ -26,7 +26,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        // 1) Genel hata yakalayici: HER SEYDEN ONCE (R6).
+        // 1) Genel hata yakalayici: HER SEYDEN ONCE.
         var genelHataYakalayici = new GenelHataYakalayici();
         genelHataYakalayici.Kur();
 
@@ -36,10 +36,10 @@ internal static class Program
         ServiceProvider servisler;
         try
         {
-            servisler = ServisleriKur();
+            servisler = ServisleriKur(UygulamaYollari.VarsayilanKokKlasor());
             genelHataYakalayici.BildiriciyiAta(servisler.GetRequiredService<IHataBildirici>());
         }
-        catch (Exception hata)
+        catch (Exception hata) when (!DerlemeModu.HataAyiklamaMi)   // Debug'da debugger dursun
         {
             BaslangicHatasiniBildir(hata, "Uygulama başlatılamadı: servisler (DI) kurulamadı.");
             return;
@@ -58,7 +58,7 @@ internal static class Program
 
                 Application.Run(form);
             }
-            catch (Exception hata)
+            catch (Exception hata) when (!DerlemeModu.HataAyiklamaMi)
             {
                 BaslangicHatasiniBildir(hata, "Uygulama başlatılamadı: ana pencere açılamadı.");
             }
@@ -70,7 +70,9 @@ internal static class Program
     }
 
     // ================= DI KURULUMU (hepsi Singleton: tek pencere, tek oturum) =================
-    private static ServiceProvider ServisleriKur()
+    // internal: smoke testleri ayni kayitlarla container'i kurabilsin (InternalsVisibleTo).
+    // kokKlasor: log klasoru; testte gecici bir klasor verilir.
+    internal static ServiceProvider ServisleriKur(string kokKlasor)
     {
         var servisler = new ServiceCollection();
 
@@ -85,7 +87,7 @@ internal static class Program
         servisler.AddSingleton<KayitYoneticisi>();   // presenter
 
         // ---- Infrastructure ----
-        servisler.AddSingleton<IUygulamaYollari>(_ => new UygulamaYollari(UygulamaYollari.VarsayilanKokKlasor()));
+        servisler.AddSingleton<IUygulamaYollari>(_ => new UygulamaYollari(kokKlasor));
         servisler.AddSingleton<IGunlukcu, SerilogGunlukcu>();
         servisler.AddSingleton<IHataBildirici, HataBildirici>();
         servisler.AddSingleton<IDosyaYazici, MetinDosyasiYazici>();
@@ -119,7 +121,7 @@ internal static class Program
         }
         catch
         {
-            // R6
+            // bilerek bos: uygulama devam etsin
         }
 
         try
@@ -130,7 +132,7 @@ internal static class Program
         }
         catch
         {
-            // R6
+            // bilerek bos: uygulama devam etsin
         }
     }
 }

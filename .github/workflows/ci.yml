@@ -1,0 +1,36 @@
+# CI: her push ve pull request'te derle + test et.
+# Birim ve smoke testleri basarisizsa build kirmizi olur.
+# Performans testleri ayri adimda calisir; bulut sunucusu yavas olabilecegi icin build'i kirmaz,
+# olculen sureler adim ciktisinda gorunur.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  derle-ve-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Paketleri indir
+        run: dotnet restore
+
+      - name: Derle
+        run: dotnet build --no-restore -c Release
+
+      - name: Birim testleri
+        run: dotnet test --no-build -c Release --filter "TestCategory!=Smoke&TestCategory!=Performans"
+
+      - name: Smoke testleri
+        run: dotnet test tests/KeyEventLogger.SmokeTests --no-build -c Release
+
+      - name: Performans testleri
+        continue-on-error: true
+        run: dotnet test tests/KeyEventLogger.PerformanceTests --no-build -c Release --logger "console;verbosity=detailed"

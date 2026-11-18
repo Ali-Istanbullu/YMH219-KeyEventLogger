@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace KeyEventLogger.WinForms.Platform;
 
-// Tek sorumlulugu: Keys degerini listede gosterilecek ada cevirmek (S). CK12, CK21.
+// Tek sorumlulugu: Keys degerini listede gosterilecek ada cevirmek (S).
 //
 // 1) Ozel tuslar sozlukten: Return -> Enter, ShiftKey -> Shift, D5 -> 5 ...
 //    (Keys enum'unda ayni sayiya iki ad var, ToString() hangisini verecegi belli degil.)

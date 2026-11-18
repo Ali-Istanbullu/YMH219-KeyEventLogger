@@ -1,5 +1,4 @@
 using KeyEventLogger.Core.Abstractions;
-using KeyEventLogger.Core.Errors;
 using KeyEventLogger.Core.Models;
 
 namespace KeyEventLogger.Core.Presentation;
@@ -16,8 +15,10 @@ namespace KeyEventLogger.Core.Presentation;
 //   - Dosya yolu sorma / dosya yazma  -> IKaydetmeDiyalogu / IDosyaYazici
 //   - Dosya hatasinin sebebi          -> IDosyaHatasiAciklayici
 // Butun bagimliliklar constructor'dan arayuz olarak gelir (DI).
-// Her olay try/catch ile korunur, uygulama hicbir hatada kapanmaz (R6). Her hatanin ADI ve
-// ekranda mi yoksa sadece logda mi gorunecegi HataMesajlari'nda tanimli (CK19).
+//
+// Hata yonetimi: sadece BEKLENEN hata yakalanir (dosya yazilamadi: kilitli, izin yok, disk dolu ...)
+// ve kullaniciya sebebiyle gosterilir. Kodumuzdaki bir hata (bug) burada YAKALANMAZ: Debug'da
+// debugger o satirda durur, Release'te GenelHataYakalayici loga yazar.
 public sealed class KayitYoneticisi
 {
     private readonly IKayitGorunumu _gorunum;
@@ -88,22 +89,15 @@ public sealed class KayitYoneticisi
     // Uygulama acilinca bir kez: form olaylarina abone ol, baslangic durumunu goster (kayit KAPALI).
     public void Hazirla()
     {
-        // Kullanicinin bastigi butonlar: hata olursa kullanici BILMELI (sonuc olmadi) -> ekran + log.
-        _gorunum.BaslatTiklandi += (_, _) => Guvenli(Baslat, Gorunurluk.EkranVeGunluk, HataMesajlari.KayitBaslatilamadi);
-        _gorunum.DurdurTiklandi += (_, _) => Guvenli(Durdur, Gorunurluk.EkranVeGunluk, HataMesajlari.KayitDurdurulamadi);
-        _gorunum.TemizleTiklandi += (_, _) => Guvenli(Temizle, Gorunurluk.EkranVeGunluk, HataMesajlari.KayitlarTemizlenemedi);
-        _gorunum.KaydetTiklandi += (_, _) => Guvenli(Kaydet, Gorunurluk.EkranVeGunluk, HataMesajlari.KaydetmeBasarisiz);
-        _gorunum.FiltreDegisti += (_, _) => Guvenli(FiltreyiUygula, Gorunurluk.EkranVeGunluk, HataMesajlari.FiltreUygulanamadi);
+        _gorunum.BaslatTiklandi += (_, _) => Baslat();
+        _gorunum.DurdurTiklandi += (_, _) => Durdur();
+        _gorunum.TemizleTiklandi += (_, _) => Temizle();
+        _gorunum.KaydetTiklandi += (_, _) => Kaydet();
+        _gorunum.FiltreDegisti += (_, _) => FiltreyiUygula();
+        _gorunum.TusOlayiGeldi += (_, ham) => TusOlayiniIsle(ham);
 
-        // Tus olaylari saniyede onlarca gelir: her birinde mesaj kutusu acilmasin -> sadece log.
-        _gorunum.TusOlayiGeldi += (_, ham) =>
-            Guvenli(() => TusOlayiniIsle(ham), Gorunurluk.SadeceGunluk, HataMesajlari.TusOlayiIslenemedi);
-
-        Guvenli(() =>
-        {
-            _gorunum.KayitDurumunuGoster(_oturum.KayitAcikMi);
-            _gorunum.IstatistigiGoster(IstatistikOzeti.Bos);
-        }, Gorunurluk.EkranVeGunluk, HataMesajlari.UygulamaHazirlanamadi);
+        _gorunum.KayitDurumunuGoster(_oturum.KayitAcikMi);
+        _gorunum.IstatistigiGoster(IstatistikOzeti.Bos);
     }
 
     // ================= BUTONLAR =================
@@ -142,16 +136,7 @@ public sealed class KayitYoneticisi
         }
 
         DateTime simdi = _saat.Simdi;
-        string? yol;
-        try
-        {
-            yol = _kaydetmeDiyalogu.YolSor($"tus_kayitlari_{simdi:yyyyMMdd_HHmmss}.txt");
-        }
-        catch (Exception hata)
-        {
-            _hataBildirici.Bildir(hata, Gorunurluk.EkranVeGunluk, HataMesajlari.KaydetmePenceresiAcilamadi);
-            return;
-        }
+        string? yol = _kaydetmeDiyalogu.YolSor($"tus_kayitlari_{simdi:yyyyMMdd_HHmmss}.txt");
         if (string.IsNullOrWhiteSpace(yol))
         {
             return;   // kullanici iptal etti
@@ -161,9 +146,9 @@ public sealed class KayitYoneticisi
         {
             _dosyaYazici.Yaz(yol, _dosyaIcerigi.Olustur(gorunenler, filtre, simdi));
         }
-        catch (Exception hata)
+        catch (Exception hata) when (BeklenenDosyaHatasiMi(hata))
         {
-            // Kilitli dosya, yetki, disk dolu ...: kullaniciya SEBEBI soylenir (CK20), ayrinti loga.
+            // Kilitli dosya, yetki, disk dolu ...: kullaniciya SEBEBI soylenir, ayrinti loga.
             _hataBildirici.Bildir(hata, Gorunurluk.EkranVeGunluk, $"{_dosyaHatasiAciklayici.Acikla(hata)}\n{yol}");
             return;
         }
@@ -206,7 +191,7 @@ public sealed class KayitYoneticisi
     }
 
     // Filtre degerlerini dogrulayiciya sorar (S). Gecersizse filtre uygulanmaz (null) ve
-    // kullanici - uyar istenmisse - bir kez uyarilir (CK7). Mesaji gostermek koordinasyon isidir.
+    // kullanici - uyar istenmisse - bir kez uyarilir. Mesaji gostermek koordinasyon isidir.
     private TarihAraligi? GecerliFiltre(bool uyar)
     {
         FiltreSonucu sonuc = _filtreDogrulayici.Dogrula(
@@ -220,26 +205,8 @@ public sealed class KayitYoneticisi
         return sonuc.Aralik;
     }
 
-    // ================= HATA KORUMASI =================
-
-    // Her form olayi buradan gecer (R4, R6): hata ADIYLA bildirilir; nerede gosterilecegi
-    // olaya gore secilir (CK19). Uygulama hicbir durumda kapanmaz.
-    private void Guvenli(Action islem, Gorunurluk gorunurluk, string hataMesaji)
-    {
-        try
-        {
-            islem();
-        }
-        catch (Exception hata)
-        {
-            try
-            {
-                _hataBildirici.Bildir(hata, gorunurluk, hataMesaji);
-            }
-            catch
-            {
-                // Hata bildirici de cokerse yapacak bir sey yok; uygulama yine de kapanmamali.
-            }
-        }
-    }
+    // Dis dunyadan gelen, kullanicinin duzeltebilecegi dosya hatalari. Digerleri bug'dir, yakalanmaz.
+    // (DirectoryNotFound, PathTooLong, "dosya kilitli", "disk dolu" hepsi IOException'dir.)
+    private static bool BeklenenDosyaHatasiMi(Exception hata) =>
+        hata is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException;
 }

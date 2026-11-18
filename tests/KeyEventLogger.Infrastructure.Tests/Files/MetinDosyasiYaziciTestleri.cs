@@ -47,7 +47,7 @@ public sealed class MetinDosyasiYaziciTestleri
     [TestMethod]
     public void Yaz_KlasorYoksa_HataCagiranaGider()
     {
-        // Hata yutulmamali: presenter yakalayip kullaniciya "yazilamadi" demeli (CK8).
+        // Hata yutulmamali: presenter yakalayip kullaniciya "yazilamadi" demeli.
         using var klasor = new GeciciKlasor();
         string yol = Path.Combine(klasor.Yol, "olmayan", "kayit.txt");
 

@@ -3,7 +3,7 @@ using KeyEventLogger.Core.Models;
 
 namespace KeyEventLogger.Core.Services;
 
-// Tek sorumlulugu: bir olayi tek satira cevirmek (S). CK3, CK4.
+// Tek sorumlulugu: bir olayi tek satira cevirmek (S).
 // Sutunlar sabit genislikte (PadRight): ListBox'ta esit genislikli yazi tipiyle (Consolas) hizali durur.
 public sealed class SatirBicimleyici : ISatirBicimleyici
 {
@@ -18,7 +18,7 @@ public sealed class SatirBicimleyici : ISatirBicimleyici
         return $"{zaman}  {tur}  {tus}{EkTuslar(olay)}".TrimEnd();
     }
 
-    // Dersin terimleriyle olay adi (PDF: KeyDown, KeyPress, KeyUp) - CK2.
+    // Dersin terimleriyle olay adi (PDF: KeyDown, KeyPress, KeyUp).
     public static string OlayAdi(OlayTuru tur) => tur switch
     {
         OlayTuru.TusBasildi => "KeyDown",
@@ -27,7 +27,7 @@ public sealed class SatirBicimleyici : ISatirBicimleyici
         _ => tur.ToString()
     };
 
-    // KeyPress'te yazilan karakter gosterilir; gorunmeyen karakterlere ad verilir (CK4).
+    // KeyPress'te yazilan karakter gosterilir; gorunmeyen karakterlere ad verilir.
     private static string TusGosterimi(TusOlayi olay)
     {
         if (olay.Tur != OlayTuru.KarakterYazildi || olay.Karakter is not char karakter)
@@ -47,7 +47,7 @@ public sealed class SatirBicimleyici : ISatirBicimleyici
     }
 
     // Basili ek tuslar: "  Ctrl+Shift". Hicbiri yoksa bos.
-    // Basilan tusun KENDISI ek tus ise (Shift'e basildi) tekrar yazilmaz: "Shift  Shift" olmasin (CK22).
+    // Basilan tusun KENDISI ek tus ise (Shift'e basildi) tekrar yazilmaz: "Shift  Shift" olmasin.
     private static string EkTuslar(TusOlayi olay)
     {
         var parcalar = new List<string>(3);

@@ -8,7 +8,7 @@ namespace KeyEventLogger.Infrastructure.Errors;
 // Tek sorumlulugu: hatanin hangi kanala gidecegine karar vermek (S).
 //   - HER hata loga yazilir (IGunlukcu)
 //   - EkranVeGunluk ise kullaniciya da gosterilir (IKullaniciBildirici)
-// R6: Butun catch bloklarinin son duragi burasi; hicbir yolu disari exception sizdirmaz.
+// Butun catch bloklarinin son duragi burasi; hicbir yolu disari exception sizdirmaz.
 public sealed class HataBildirici : IHataBildirici
 {
     // Mesaj bos gelirse (programci hatasi) yine de anlamli bir metin gosterilir.
@@ -38,7 +38,7 @@ public sealed class HataBildirici : IHataBildirici
         }
         catch
         {
-            // R6: log yazilamiyorsa sessizce devam.
+            // log yazilamiyorsa sessizce devam.
         }
 
         // 2) Sadece EkranVeGunluk ise kullaniciya goster.
@@ -60,7 +60,7 @@ public sealed class HataBildirici : IHataBildirici
             }
             catch
             {
-                // R6
+                // bilerek bos: uygulama devam etsin
             }
         }
     }

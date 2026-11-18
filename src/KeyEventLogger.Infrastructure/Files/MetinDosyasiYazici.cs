@@ -9,7 +9,7 @@ namespace KeyEventLogger.Infrastructure.Files;
 // - Dosya varsa USTUNE yazilir (SaveFileDialog zaten "uzerine yazilsin mi?" diye sorar).
 // - UTF-8 BOM'lu: Turkce karakterler (ı, ş, ğ) Notepad'de dogru gorunur (teknoloji karari, Ali onayladi).
 // - Hata (klasor yok, yetki yok, dosya baska programda acik) YAKALANMAZ: cagiran presenter
-//   yakalar ve kullaniciya "Kayıtlar dosyaya yazılamadı." der (CK8). Burada yutulsaydi
+//   yakalar ve kullaniciya "Kayıtlar dosyaya yazılamadı." der. Burada yutulsaydi
 //   kullanici dosyanin kaydedildigini sanardi (veri kaybi).
 public sealed class MetinDosyasiYazici : IDosyaYazici
 {

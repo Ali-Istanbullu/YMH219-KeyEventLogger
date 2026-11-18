@@ -8,5 +8,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/KeyEventLogger.Core.Tests/KeyEventLogger.Core.Tests.csproj" />
     <Project Path="tests/KeyEventLogger.Infrastructure.Tests/KeyEventLogger.Infrastructure.Tests.csproj" />
+    <Project Path="tests/KeyEventLogger.PerformanceTests/KeyEventLogger.PerformanceTests.csproj" />
+    <Project Path="tests/KeyEventLogger.SmokeTests/KeyEventLogger.SmokeTests.csproj" />
   </Folder>
 </Solution>

@@ -10,9 +10,9 @@ namespace KeyEventLogger.Infrastructure.Logging;
 //
 // 1 MB'a ulasan dosya kapanir, yenisi acilir; en fazla 5 dosya tutulur, en eskisi Serilog
 // tarafindan OTOMATIK silinir. Her satirda tarih ve saat var.
-// CK11: BASILAN TUSLAR LOGA YAZILMAZ (gizli kayit olmasin, PDF guvenlik siniri). Logda sadece
+// BASILAN TUSLAR LOGA YAZILMAZ (gizli kayit olmasin, PDF guvenlik siniri). Logda sadece
 //       uygulama olaylari (acildi, kayit basladi/durdu, dosya kaydedildi) ve hatalar bulunur.
-// R6 : Bu sinif ASLA exception firlatmaz. Log yazilamazsa uygulama sessizce devam eder.
+// Bu sinif ASLA exception firlatmaz. Log yazilamazsa uygulama sessizce devam eder.
 public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
 {
     private const long DosyaBoyutuSiniri = 1024 * 1024;   // 1 MB
@@ -44,7 +44,7 @@ public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
         catch
         {
             // Log dosyasi acilamadi (izin yok, disk dolu ...): uygulama durmaz,
-            // hicbir yere yazmayan "bos" logger kullanilir (R6).
+            // hicbir yere yazmayan "bos" logger kullanilir.
             _logger = new LoggerConfiguration().CreateLogger();
         }
     }
@@ -58,7 +58,7 @@ public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
         }
         catch
         {
-            // R6: log hatasi uygulamayi asla durdurmaz.
+            // log hatasi uygulamayi asla durdurmaz.
         }
     }
 
@@ -70,7 +70,7 @@ public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
         }
         catch
         {
-            // R6
+            // bilerek bos: uygulama devam etsin
         }
     }
 
@@ -83,7 +83,7 @@ public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
         }
         catch
         {
-            // R6
+            // bilerek bos: uygulama devam etsin
         }
     }
 
@@ -95,7 +95,7 @@ public sealed class SerilogGunlukcu : IGunlukcu, IDisposable
         }
         catch
         {
-            // R6: kapanista bile exception disari cikmaz.
+            // kapanista bile exception disari cikmaz.
         }
     }
 }

@@ -4,7 +4,7 @@ using KeyEventLogger.Core.Models;
 
 namespace KeyEventLogger.Core.Services;
 
-// Tek sorumlulugu: .txt dosyasinin icerigini olusturmak (S). CK8.
+// Tek sorumlulugu: .txt dosyasinin icerigini olusturmak (S).
 // Satirlari kendisi bicimlemez; ISatirBicimleyici'den ister (ekranla dosya ayni kalsin diye).
 public sealed class DosyaIcerigiOlusturucu : IDosyaIcerigiOlusturucu
 {

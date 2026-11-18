@@ -11,9 +11,9 @@ namespace KeyEventLogger.WinForms.Forms;
 //  Tek sorumlulugu: ekrani gostermek ve kullanicinin yaptiklarini (buton, tus, filtre)
 //  olay olarak presenter'a (KayitYoneticisi) bildirmek. Hicbir KARAR vermez.
 //
-//  Klavye olaylari (PDF G6): KeyPreview = true sayesinde hangi kontrol odakta olursa olsun
+//  Klavye olaylari: KeyPreview = true sayesinde hangi kontrol odakta olursa olsun
 //  tuslar ONCE formun KeyDown / KeyPress / KeyUp olaylarina gelir.
-//  G7: Bunlar sadece BU pencere aktifken gelir. Global hook yok, baska pencereler gorulmez.
+//  Bunlar sadece BU pencere aktifken gelir. Global hook yok, baska pencereler gorulmez.
 //
 //  Kontroller designer ile degil kodla olusturulur (her satirin ne yaptigi gorulsun diye).
 // ================================================================================
@@ -26,16 +26,16 @@ public sealed class AnaForm : Form, IKayitGorunumu
     private readonly IHataBildirici _hataBildirici;
 
     // ---- Kontroller ----
-    private readonly Label _gosterge;                 // G5: "● KAYIT AÇIK / KAPALI"
-    private readonly OdakAlmayanButon _baslatButonu;  // G2
-    private readonly OdakAlmayanButon _durdurButonu;  // G2
-    private readonly OdakAlmayanButon _temizleButonu; // G3
-    private readonly OdakAlmayanButon _kaydetButonu;  // G4
-    private readonly CheckBox _filtreKutusu;          // G9: filtre acik/kapali
+    private readonly Label _gosterge;                 // "● KAYIT AÇIK / KAPALI"
+    private readonly OdakAlmayanButon _baslatButonu;
+    private readonly OdakAlmayanButon _durdurButonu;
+    private readonly OdakAlmayanButon _temizleButonu;
+    private readonly OdakAlmayanButon _kaydetButonu;
+    private readonly CheckBox _filtreKutusu;          // filtre acik/kapali
     private readonly DateTimePicker _baslangicSecici;
     private readonly DateTimePicker _bitisSecici;
-    private readonly ListBox _liste;                  // G1, K1
-    private readonly Label _istatistik;               // G9
+    private readonly ListBox _liste;
+    private readonly Label _istatistik;
 
     public AnaForm(ITusAdiCevirici tusAdiCevirici, IHataBildirici hataBildirici)
     {
@@ -64,10 +64,10 @@ public sealed class AnaForm : Form, IKayitGorunumu
         _durdurButonu = Buton("Durdur");
         _temizleButonu = Buton("Temizle");
         _kaydetButonu = Buton("Kaydet (.txt)");
-        _baslatButonu.Click += (_, _) => OlayiTetikle(BaslatTiklandi, "Başlat");
-        _durdurButonu.Click += (_, _) => OlayiTetikle(DurdurTiklandi, "Durdur");
-        _temizleButonu.Click += (_, _) => OlayiTetikle(TemizleTiklandi, "Temizle");
-        _kaydetButonu.Click += (_, _) => OlayiTetikle(KaydetTiklandi, "Kaydet");
+        _baslatButonu.Click += (_, _) => OlayiTetikle(BaslatTiklandi);
+        _durdurButonu.Click += (_, _) => OlayiTetikle(DurdurTiklandi);
+        _temizleButonu.Click += (_, _) => OlayiTetikle(TemizleTiklandi);
+        _kaydetButonu.Click += (_, _) => OlayiTetikle(KaydetTiklandi);
 
         var ustSatir = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, 8, 8, 0) };
         ustSatir.Controls.AddRange([_gosterge, _baslatButonu, _durdurButonu, _temizleButonu, _kaydetButonu]);
@@ -79,11 +79,11 @@ public sealed class AnaForm : Form, IKayitGorunumu
         _filtreKutusu.CheckedChanged += (_, _) =>
         {
             _baslangicSecici.Enabled = _bitisSecici.Enabled = _filtreKutusu.Checked;
-            OlayiTetikle(FiltreDegisti, "Filtre aç/kapa");
+            OlayiTetikle(FiltreDegisti);
             _liste?.Focus();   // tuslar yine listeye gitsin
         };
-        _baslangicSecici.ValueChanged += (_, _) => OlayiTetikle(FiltreDegisti, "Filtre başlangıcı");
-        _bitisSecici.ValueChanged += (_, _) => OlayiTetikle(FiltreDegisti, "Filtre bitişi");
+        _baslangicSecici.ValueChanged += (_, _) => OlayiTetikle(FiltreDegisti);
+        _bitisSecici.ValueChanged += (_, _) => OlayiTetikle(FiltreDegisti);
 
         var filtreSatiri = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, Padding = new Padding(8, 4, 8, 4) };
         filtreSatiri.Controls.AddRange(
@@ -98,7 +98,7 @@ public sealed class AnaForm : Form, IKayitGorunumu
         var istatistikKutusu = new GroupBox { Text = "İstatistik", Dock = DockStyle.Right, Width = 230 };
         istatistikKutusu.Controls.Add(_istatistik);
 
-        // ---- Alt: bilgi satiri (G7 seffaflik) ----
+        // ---- Alt: bilgi satiri (kullaniciya ne yapildigini acikca soyler) ----
         var bilgi = new Label
         {
             Dock = DockStyle.Bottom,
@@ -109,11 +109,11 @@ public sealed class AnaForm : Form, IKayitGorunumu
             Text = "Tuşlar sadece bu pencere aktifken ve kayıt açıkken yakalanır. Tuşlar log dosyasına yazılmaz."
         };
 
-        // ---- Orta: liste (K1: ListBox) ----
+        // ---- Orta: liste (ListBox) ----
         _liste = new ListBox
         {
             Dock = DockStyle.Fill,
-            Font = new Font("Consolas", 10f),   // esit genislikli: sutunlar hizali (CK3)
+            Font = new Font("Consolas", 10f),   // esit genislikli: sutunlar hizali
             HorizontalScrollbar = true,
             IntegralHeight = false
         };
@@ -209,47 +209,18 @@ public sealed class AnaForm : Form, IKayitGorunumu
 
     // ================= Yardimcilar =================
 
-    private void TusOlayiBildir(OlayTuru tur, KeyEventArgs e)
-    {
-        try
-        {
-            TusOlayiGeldi?.Invoke(this, new HamTusOlayi(tur, _tusAdiCevirici.Ad(e.KeyCode), null, e.Control, e.Shift, e.Alt));
-        }
-        catch (Exception hata)
-        {
-            // Her tusta mesaj kutusu acilmasin: sadece log (CK19). Hangi olay ve tus oldugu da yazilir.
-            _hataBildirici.Bildir(hata, Gorunurluk.SadeceGunluk, $"{HataMesajlari.TusOlayiIletilemedi} ({tur}, {e.KeyCode})");
-        }
-    }
+    private void TusOlayiBildir(OlayTuru tur, KeyEventArgs e) =>
+        TusOlayiGeldi?.Invoke(this, new HamTusOlayi(tur, _tusAdiCevirici.Ad(e.KeyCode), null, e.Control, e.Shift, e.Alt));
 
     private void KarakterOlayiBildir(KeyPressEventArgs e)
     {
-        try
-        {
-            // KeyPress'te Ctrl/Shift/Alt bilgisi gelmez; o anki durumu Windows'tan okuruz.
-            Keys ek = ModifierKeys;
-            TusOlayiGeldi?.Invoke(this, new HamTusOlayi(OlayTuru.KarakterYazildi, e.KeyChar.ToString(), e.KeyChar,
-                ek.HasFlag(Keys.Control), ek.HasFlag(Keys.Shift), ek.HasFlag(Keys.Alt)));
-        }
-        catch (Exception hata)
-        {
-            _hataBildirici.Bildir(hata, Gorunurluk.SadeceGunluk, $"{HataMesajlari.TusOlayiIletilemedi} (KeyPress, U+{(int)e.KeyChar:X4})");
-        }
+        // KeyPress'te Ctrl/Shift/Alt bilgisi gelmez; o anki durumu Windows'tan okuruz.
+        Keys ek = ModifierKeys;
+        TusOlayiGeldi?.Invoke(this, new HamTusOlayi(OlayTuru.KarakterYazildi, e.KeyChar.ToString(), e.KeyChar,
+            ek.HasFlag(Keys.Control), ek.HasFlag(Keys.Shift), ek.HasFlag(Keys.Alt)));
     }
 
-    // Presenter her olayi kendi icinde yakalayip ADIYLA bildirir; buradaki catch ikinci emniyet.
-    // olayAdi: loga hangi butonun/olayin oldugu yazilsin diye.
-    private void OlayiTetikle(EventHandler? olay, string olayAdi)
-    {
-        try
-        {
-            olay?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception hata)
-        {
-            _hataBildirici.Bildir(hata, Gorunurluk.SadeceGunluk, $"{HataMesajlari.ButonOlayiIletilemedi} ({olayAdi})");
-        }
-    }
+    private void OlayiTetikle(EventHandler? olay) => olay?.Invoke(this, EventArgs.Empty);
 
     private static OdakAlmayanButon Buton(string metin) =>
         new() { Text = metin, AutoSize = true, Padding = new Padding(8, 2, 8, 2), Margin = new Padding(3, 3, 6, 3) };
@@ -264,16 +235,16 @@ public sealed class AnaForm : Form, IKayitGorunumu
         Value = deger
     };
 
-    // Pencere ikonu = exe'ye gomulu ikon. Bulunamazsa varsayilan ikon kalir (R4).
+    // Pencere ikonu = exe'ye gomulu ikon. Bulunamazsa varsayilan ikon kalir.
     private void PencereIkonunuYukle()
     {
         try
         {
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? Icon;
         }
-        catch (Exception hata)
+        catch (Exception hata) when (hata is IOException or ArgumentException or UnauthorizedAccessException)
         {
-            // Ikon olmadan da uygulama calisir: kullaniciyi rahatsiz etme, sadece log.
+            // Beklenen: exe dosyasi okunamadi. Ikon olmadan da uygulama calisir: sadece log.
             _hataBildirici.Bildir(hata, Gorunurluk.SadeceGunluk, HataMesajlari.PencereIkonuYuklenemedi);
         }
     }

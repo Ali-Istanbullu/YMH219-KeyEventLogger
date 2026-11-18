@@ -4,7 +4,7 @@ using System.Drawing.Text;
 
 namespace KeyEventLogger.IconGenerator;
 
-// Tek sorumlulugu: verilen boyutta ikon resmini cizmek (S). CK23.
+// Tek sorumlulugu: verilen boyutta ikon resmini cizmek (S).
 // Gorunus: koyu lacivert yuvarlak kare + ortada acik renkli klavye tusu ("K" harfi)
 //          + sag ustte kirmizi "kayit" noktasi.
 public sealed class IkonCizici

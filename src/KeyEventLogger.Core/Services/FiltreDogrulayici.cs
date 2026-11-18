@@ -15,7 +15,7 @@ public sealed class FiltreDogrulayici : IFiltreDogrulayici
         }
         if (baslangic > bitis)
         {
-            return new FiltreSonucu(null, GecersizMi: true);   // CK7: uygulanmaz, uyarilir
+            return new FiltreSonucu(null, GecersizMi: true);   // uygulanmaz, uyarilir
         }
         return new FiltreSonucu(new TarihAraligi(baslangic, bitis), GecersizMi: false);
     }

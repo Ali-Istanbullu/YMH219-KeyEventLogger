@@ -42,7 +42,7 @@ public sealed class SerilogGunlukcuTestleri
     [TestMethod]
     public void YollarAlinamazsa_UygulamaCokmez()
     {
-        // Gecersiz kok (yol icinde NUL karakteri): klasor olusturulamaz, ama exception da firlamaz (R6).
+        // Gecersiz kok (yol icinde NUL karakteri): klasor olusturulamaz, ama exception da firlamaz.
         var yollar = new UygulamaYollari("gecersiz\0yol");
 
         using var gunlukcu = new SerilogGunlukcu(yollar);

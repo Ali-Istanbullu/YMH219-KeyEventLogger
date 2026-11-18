@@ -1,4 +1,3 @@
-using KeyEventLogger.Core.Errors;
 using KeyEventLogger.Core.Models;
 using KeyEventLogger.Core.Presentation;
 using KeyEventLogger.Core.Services;
@@ -180,44 +179,36 @@ public sealed class KayitYoneticisiTestleri
         Assert.HasCount(4, _gorunum.Satirlar);
     }
 
+    // Kodumuzdaki hatalar (bug) YUTULMAZ: cagirana kadar cikar (Debug'da debugger durur).
     [TestMethod]
-    public void TusHatasi_SadeceLogaGiderAdiylaBildirilir()
+    public void TusIslemedekiBug_Yutulmaz()
     {
         Hazir();
         _gorunum.BaslataBas();
         _gorunum.SatirEkleHataFirlatsin = true;
 
-        _gorunum.TusaBas("A");                     // istisna disari sizmamali (R6)
-
-        Assert.IsNotEmpty(_hata.Bildirimler);
-        Assert.AreEqual(HataMesajlari.TusOlayiIslenemedi, _hata.Bildirimler[0].Mesaj);
-        Assert.AreEqual(Gorunurluk.SadeceGunluk, _hata.Bildirimler[0].Gorunurluk);
+        Assert.ThrowsExactly<InvalidOperationException>(() => _gorunum.TusaBas("A"));
+        Assert.IsEmpty(_hata.Bildirimler);
     }
 
     [TestMethod]
-    public void ButonHatasi_EkranaAdiylaBildirilir()
+    public void ButondakiBug_Yutulmaz()
     {
         Hazir();
         _gorunum.DurumGosterHataFirlatsin = true;
 
-        _gorunum.BaslataBas();
-
-        Assert.HasCount(1, _hata.Bildirimler);
-        Assert.AreEqual(HataMesajlari.KayitBaslatilamadi, _hata.Bildirimler[0].Mesaj);
-        Assert.AreEqual(Gorunurluk.EkranVeGunluk, _hata.Bildirimler[0].Gorunurluk);
+        Assert.ThrowsExactly<InvalidOperationException>(() => _gorunum.BaslataBas());
     }
 
     [TestMethod]
-    public void KaydetmePenceresiHatasi_EkranaAdiylaBildirilir()
+    public void Kaydet_BeklenmeyenHata_Yutulmaz()
     {
         Hazir();
         _gorunum.BaslataBas();
         _gorunum.TusaBas("A");
-        _diyalog.HataFirlatsin = true;
+        _dosya.BugFirlatsin = true;
 
-        _gorunum.KaydeteBas();
-
-        Assert.AreEqual(HataMesajlari.KaydetmePenceresiAcilamadi, _hata.Bildirimler[0].Mesaj);
-        Assert.IsNull(_dosya.YazilanYol);
+        Assert.ThrowsExactly<InvalidOperationException>(() => _gorunum.KaydeteBas());
+        Assert.IsEmpty(_hata.Bildirimler);
     }
 }

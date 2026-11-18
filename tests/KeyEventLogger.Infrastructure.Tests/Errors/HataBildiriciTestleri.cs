@@ -44,7 +44,7 @@ public sealed class HataBildiriciTestleri
         _gunlukcu.HataFirlatsin = true;
         _kullanici.HataFirlatsin = true;
 
-        Bildirici().Bildir(new IOException("x"), Gorunurluk.EkranVeGunluk, "Mesaj");   // R6: exception yok
+        Bildirici().Bildir(new IOException("x"), Gorunurluk.EkranVeGunluk, "Mesaj");   // exception disari cikmamali
     }
 
     [TestMethod]

@@ -1,0 +1,43 @@
+# CD: "v" ile baslayan bir etiket (ornek v1.0.1) gonderilince:
+# test et -> yayinla (publish) -> Inno Setup ile kurulum exe'si derle -> GitHub Release'e yukle.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # Release olusturup dosya yukleyebilmek icin
+
+jobs:
+  kurulum-yayinla:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Testler (birim + smoke)
+        run: dotnet test -c Release --filter "TestCategory!=Performans"
+
+      - name: Yayinla
+        run: dotnet publish src/KeyEventLogger.WinForms -c Release -r win-x64 --self-contained false -o publish/KeyEventLogger
+
+      # Inno Setup yeni Windows sunucu imajlarinda hazir gelmiyor; her seferinde kurulur.
+      - name: Inno Setup kur
+        run: choco install innosetup --no-progress -y
+
+      - name: Kurulum exe'sini derle
+        shell: pwsh
+        run: |
+          $iscc = Get-ChildItem "C:\Program Files*\Inno Setup*\ISCC.exe" | Select-Object -First 1
+          if (-not $iscc) { throw "ISCC.exe bulunamadi" }
+          & $iscc.FullName installer\KeyEventLogger.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup derlemesi basarisiz" }
+
+      - name: GitHub Release'e yukle
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/Output/*.exe

@@ -9,12 +9,17 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Smoke testleri Program.ServisleriKur'u (internal) cagirabilsin -->
+    <InternalsVisibleTo Include="KeyEventLogger.SmokeTests" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <AssemblyName>KeyEventLogger</AssemblyName>
     <Version>1.0.0</Version>
-    <!-- Adim 3: exe ikonu. Dosya IconGenerator ile uretilir; yoksa build yine calisir. -->
+    <!-- Exe ikonu. Dosya IconGenerator ile uretilir; yoksa build yine calisir. -->
     <ApplicationIcon Condition="Exists('..\..\assets\keyeventlogger.ico')">..\..\assets\keyeventlogger.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
