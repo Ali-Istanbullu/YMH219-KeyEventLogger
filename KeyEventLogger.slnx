@@ -1,8 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/KeyEventLogger.Core/KeyEventLogger.Core.csproj" />
+    <Project Path="src/KeyEventLogger.Infrastructure/KeyEventLogger.Infrastructure.csproj" />
+    <Project Path="src/KeyEventLogger.WinForms/KeyEventLogger.WinForms.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/KeyEventLogger.Core.Tests/KeyEventLogger.Core.Tests.csproj" />
+    <Project Path="tests/KeyEventLogger.Infrastructure.Tests/KeyEventLogger.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

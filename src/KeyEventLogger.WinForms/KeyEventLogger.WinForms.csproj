@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\KeyEventLogger.Core\KeyEventLogger.Core.csproj" />
+    <ProjectReference Include="..\KeyEventLogger.Infrastructure\KeyEventLogger.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>KeyEventLogger</AssemblyName>
+    <Version>1.0.0</Version>
+    <!-- Adim 3: exe ikonu. Dosya IconGenerator ile uretilir; yoksa build yine calisir. -->
+    <ApplicationIcon Condition="Exists('..\..\assets\keyeventlogger.ico')">..\..\assets\keyeventlogger.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

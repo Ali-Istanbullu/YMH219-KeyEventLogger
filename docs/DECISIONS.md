@@ -54,6 +54,35 @@ Ali İstanbullu — 250542019.
 | CK8 | Kaydet: kayıt yoksa "Kaydedilecek kayıt yok." uyarısı verilir. Varsayılan dosya adı `tus_kayitlari_yyyyMMdd_HHmmss.txt`. Dosyanın başında başlık, oluşturulma zamanı, filtre bilgisi ve kayıt sayısı bulunur. Yazma hatası ekrana ve loga gider | bildirildi |
 | CK9 | Zaman damgasını presenter `ISaat`'ten koyar (form değil), böylece test edilebilir | bildirildi |
 | CK10 | Presenter'daki her form olayı `Guvenli()` içinden geçer: beklenmeyen hata loga ve ekrana gider, uygulama kapanmaz (R6) | bildirildi |
+| CK11 | **Basılan tuşlar log dosyasına yazılmaz** (gizli kayıt olmasın, G7). Logda sadece uygulama olayları (açıldı/kapandı, kayıt başladı/durdu, temizlendi, dosya kaydedildi) ve hatalar var | Ali onayladı |
+| CK12 | `TusAdiCevirici`: Windows tuş kodları okunur ada çevrilir (Return→Enter, ShiftKey→Shift, ControlKey→Ctrl, Menu→Alt, D5→5 ...). Sözlükte olmayanlar Windows'un kendi adıyla yazılır | bildirildi |
+| CK13 | S düzeltmesi: filtre doğrulaması `FiltreDogrulayici`'ye, biçimleyici `SatirBicimleyici` + `DosyaIcerigiOlusturucu`'ya ayrıldı. Ortak tarih biçimi `BicimAyarlari`'nda | Ali onayladı |
+| CK14 | Teknoloji: .txt `StreamWriter` + UTF-8 BOM; `SaveFileDialog` (varsayılan klasör Belgeler, üzerine yazmadan önce sorar); ListBox yazı tipi Consolas; filtre = "Filtrele" onay kutusu + 2 tarih-saat seçici (varsayılan bugün 00:00:00 – 23:59:59) | Ali onayladı |
+| CK15 | Butonlar odak almaz (`OdakAlmayanButon`): kayıt sırasında Space/Enter yanlışlıkla butona basmasın. Liste odaktayken Tab ve ok tuşları da kaydedilir. Tek başına Alt/F10 pencere menüsüne geçmesin diye engellenir (Alt+Space çalışır) | bildirildi |
+| CK16 | Tek kopya kontrolü yok (PDF istemiyor, iki pencere birbirini etkilemiyor) | bildirildi |
+| CK17 | Bilgi satırı (pencerenin altında): "Tuşlar sadece bu pencere aktifken ve kayıt açıkken yakalanır. Tuşlar log dosyasına yazılmaz." | bildirildi |
+| CK18 | Infrastructure `net10.0-windows` (AliBird ile aynı). Log: `%LocalAppData%\KeyEventLogger\logs\keyeventlogger.log`, 1 MB × 5 dosya | bildirildi |
+| CK19 | **Hata kataloğu** `Core/Errors/HataMesajlari.cs`: her hatanın adı tek yerde. Her hata loga yazılır (adı + hata türü + yığın izi). Kural (Ali, 18.11): **kullanıcının bilmesi gerekiyorsa ekran + log, gerekmiyorsa sadece log**. Aşağıdaki hata haritasına bakın | Ali'nin kuralı |
+| CK20 | `DosyaHatasiAciklayici`: dosya yazma hatasının sebebi kullanıcıya söylenir (izin yok / klasör yok / dosya başka programda açık / disk dolu / yol çok uzun / ad geçersiz). Bilinmeyen sebepte genel mesaj gösterilir, ayrıntı loga yazılır. Mesajın altında dosya yolu da gösterilir | bildirildi |
+
+## 4b. Hata haritası (CK19)
+
+Hepsi loga yazılır. "Ekran" sütunu kullanıcıya mesaj kutusu çıkıp çıkmadığını gösterir. Uygulama hiçbirinde kapanmaz (R6).
+
+| Hata (HataMesajlari) | Ne zaman | Ekran | Neden |
+|---|---|---|---|
+| KayitBaslatilamadi / KayitDurdurulamadi / KayitlarTemizlenemedi | Butona basıldı, işlem olmadı | ✅ | Kullanıcı sonucu bekliyor |
+| KaydetmePenceresiAcilamadi | Kaydet penceresi açılamadı | ✅ | Kayıt kaydedilemedi, bilmeli |
+| DosyaYazilamadi (+ sebep + yol) | Dosya yazılamadı | ✅ | Veri kaybı: bilmeli ve düzeltebilmeli |
+| KaydetmeBasarisiz | Kaydet sırasında beklenmeyen hata | ✅ | Kayıt kaydedilemedi |
+| FiltreUygulanamadi | Filtre değişti, uygulanamadı | ✅ | Liste beklediği gibi değil |
+| UygulamaHazirlanamadi / UygulamaBaslatilamadi | Açılışta | ✅ | Uygulama kullanılamaz |
+| TusOlayiIslenemedi / TusOlayiIletilemedi (+ olay, tuş) | Tuş olayı işlenirken | ❌ | Saniyede onlarca gelir, mesaj kutusu yağmuru olmasın |
+| ButonOlayiIletilemedi (+ buton adı) | Form → presenter aktarımı | ❌ | İkinci emniyet; presenter zaten bildirir |
+| PencereIkonuYuklenemedi | Açılışta | ❌ | Uygulama ikonsuz da çalışır |
+| HataMesajiGosterilemedi | Mesaj kutusu açılamadı | ❌ | Gösterilemiyor zaten |
+| YakalanmamisHata | Gözden kaçan hata (son savunma hattı) | ilk kez ✅, sonra ❌ | Bir kez haber ver, yağmur olmasın |
+| (log dosyası açılamadı) | Serilog açılamadı | ❌ | Yazacak yer yok; uygulama logsuz devam eder |
 
 ## 5. Mimari
 
@@ -73,8 +102,8 @@ installer/KeyEventLogger.iss           (Adım 3)
 
 | Adım | İş | Durum |
 |---|---|---|
-| 1 | İskelet + Core (modeller, servisler, presenter) + Core testleri | ⏳ yazıldı, build/test bekleniyor |
-| 2 | Infrastructure + WinForms + DI + testler | |
+| 1 | İskelet + Core (modeller, servisler, presenter) + Core testleri | ✅ commit 86dbfa6 |
+| 2 | S düzeltmesi (CK13) + Infrastructure + WinForms + DI + testler | ⏳ yazıldı + hata kataloğu (CK19, CK20), build/test bekleniyor (Core 41 + Infra 15 = 56 test) |
 | 3 | İkon + Inno Setup + README + LICENSE + ekran görüntüleri + Release | |
 
 ## 7. Claude'un hataları (tekrarlanmayacak)
