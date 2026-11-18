@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/KeyEventLogger.Core/KeyEventLogger.Core.csproj" />
+    <Project Path="src/KeyEventLogger.IconGenerator/KeyEventLogger.IconGenerator.csproj" />
     <Project Path="src/KeyEventLogger.Infrastructure/KeyEventLogger.Infrastructure.csproj" />
     <Project Path="src/KeyEventLogger.WinForms/KeyEventLogger.WinForms.csproj" />
   </Folder>
