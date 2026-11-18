@@ -92,6 +92,7 @@ internal static class Program
         servisler.AddSingleton<ISaat, SistemSaati>();
 
         // ---- WinForms ----
+        servisler.AddSingleton<IKlavyeDuzeni, WindowsKlavyeDuzeni>();
         servisler.AddSingleton<ITusAdiCevirici, TusAdiCevirici>();
         servisler.AddSingleton<IKullaniciBildirici, MesajKutusuBildirici>();
         servisler.AddSingleton<IKaydetmeDiyalogu, KaydetmeDiyalogu>();

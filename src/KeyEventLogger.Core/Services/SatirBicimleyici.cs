@@ -47,12 +47,13 @@ public sealed class SatirBicimleyici : ISatirBicimleyici
     }
 
     // Basili ek tuslar: "  Ctrl+Shift". Hicbiri yoksa bos.
+    // Basilan tusun KENDISI ek tus ise (Shift'e basildi) tekrar yazilmaz: "Shift  Shift" olmasin (CK22).
     private static string EkTuslar(TusOlayi olay)
     {
         var parcalar = new List<string>(3);
-        if (olay.Ctrl) parcalar.Add("Ctrl");
-        if (olay.Shift) parcalar.Add("Shift");
-        if (olay.Alt) parcalar.Add("Alt");
+        if (olay.Ctrl && olay.Tus != "Ctrl") parcalar.Add("Ctrl");
+        if (olay.Shift && olay.Tus != "Shift") parcalar.Add("Shift");
+        if (olay.Alt && olay.Tus != "Alt") parcalar.Add("Alt");
         return parcalar.Count == 0 ? string.Empty : "  " + string.Join('+', parcalar);
     }
 }

@@ -25,6 +25,14 @@ public sealed class SatirBicimleyiciTestleri
     }
 
     [TestMethod]
+    public void EkTusunKendisi_TekrarYazilmaz()
+    {
+        var olay = new TusOlayi(TestVerisi.Baz, OlayTuru.TusBasildi, "Shift", null, Ctrl: true, Shift: true, Alt: false);
+
+        Assert.AreEqual("18.11.2026 10:00:00.000  KeyDown   Shift           Ctrl", _bicimleyici.Satir(olay));
+    }
+
+    [TestMethod]
     [DataRow('a', "'a'")]
     [DataRow('\r', "'Enter'")]
     [DataRow(' ', "'Boşluk'")]

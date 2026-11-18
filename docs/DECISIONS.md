@@ -64,6 +64,8 @@ Ali İstanbullu — 250542019.
 | CK18 | Infrastructure `net10.0-windows` (AliBird ile aynı). Log: `%LocalAppData%\KeyEventLogger\logs\keyeventlogger.log`, 1 MB × 5 dosya | bildirildi |
 | CK19 | **Hata kataloğu** `Core/Errors/HataMesajlari.cs`: her hatanın adı tek yerde. Her hata loga yazılır (adı + hata türü + yığın izi). Kural (Ali, 18.11): **kullanıcının bilmesi gerekiyorsa ekran + log, gerekmiyorsa sadece log**. Aşağıdaki hata haritasına bakın | Ali'nin kuralı |
 | CK20 | `DosyaHatasiAciklayici`: dosya yazma hatasının sebebi kullanıcıya söylenir (izin yok / klasör yok / dosya başka programda açık / disk dolu / yol çok uzun / ad geçersiz). Bilinmeyen sebepte genel mesaj gösterilir, ayrıntı loga yazılır. Mesajın altında dosya yolu da gösterilir | bildirildi |
+| CK21 | **Klavye düzeni:** Windows tuş kodları ABD klavyesine göre adlandırılır (Türkçe Q'da `i` = OemQuotes, `ü` = Oem6). Ali çalıştırırken fark etti. Harf ve Oem tuşlarının adı, aktif klavye düzeninin ürettiği karakterden alınır (`MapVirtualKeyW`, MAPVK_VK_TO_CHAR) ve Türkçe kurala göre büyütülür: i→İ, ı→I, ü→Ü. Karşılığı yoksa Windows'un adı kullanılır | bildirildi |
+| CK22 | Basılan tuşun kendisi ek tuşsa (Shift'e basılınca) ek tuş sütununda tekrar yazılmaz | bildirildi |
 
 ## 4b. Hata haritası (CK19)
 
@@ -103,7 +105,7 @@ installer/KeyEventLogger.iss           (Adım 3)
 | Adım | İş | Durum |
 |---|---|---|
 | 1 | İskelet + Core (modeller, servisler, presenter) + Core testleri | ✅ commit 86dbfa6 |
-| 2 | S düzeltmesi (CK13) + Infrastructure + WinForms + DI + testler | ⏳ yazıldı + hata kataloğu (CK19, CK20), build/test bekleniyor (Core 41 + Infra 15 = 56 test) |
+| 2 | S düzeltmesi (CK13) + Infrastructure + WinForms + DI + testler | ⏳ yazıldı + hata kataloğu (CK19, CK20), build/test bekleniyor (Core 42 + Infra 15 = 57 test) |
 | 3 | İkon + Inno Setup + README + LICENSE + ekran görüntüleri + Release | |
 
 ## 7. Claude'un hataları (tekrarlanmayacak)
