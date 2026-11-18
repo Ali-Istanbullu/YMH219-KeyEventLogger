@@ -21,6 +21,7 @@ public sealed class SahteGorunum : IKayitGorunumu
     public bool? KayitAcikGosterildi { get; private set; }
     public IstatistikOzeti? SonIstatistik { get; private set; }
     public bool SatirEkleHataFirlatsin { get; set; }
+    public bool DurumGosterHataFirlatsin { get; set; }
 
     public void SatirEkle(string satir)
     {
@@ -37,7 +38,14 @@ public sealed class SahteGorunum : IKayitGorunumu
         Satirlar.AddRange(satirlar);
     }
 
-    public void KayitDurumunuGoster(bool kayitAcik) => KayitAcikGosterildi = kayitAcik;
+    public void KayitDurumunuGoster(bool kayitAcik)
+    {
+        if (DurumGosterHataFirlatsin && kayitAcik)
+        {
+            throw new InvalidOperationException("Sahte gorunum hatasi");
+        }
+        KayitAcikGosterildi = kayitAcik;
+    }
     public void IstatistigiGoster(IstatistikOzeti ozet) => SonIstatistik = ozet;
 
     // ---- Testin "kullanici" gibi davranmasi icin ----

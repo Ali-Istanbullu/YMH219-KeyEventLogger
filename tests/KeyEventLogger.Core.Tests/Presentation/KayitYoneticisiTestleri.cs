@@ -1,3 +1,4 @@
+using KeyEventLogger.Core.Errors;
 using KeyEventLogger.Core.Models;
 using KeyEventLogger.Core.Presentation;
 using KeyEventLogger.Core.Services;
@@ -20,7 +21,8 @@ public sealed class KayitYoneticisiTestleri
     private KayitYoneticisi Hazir()
     {
         var yonetici = new KayitYoneticisi(_gorunum, new KayitOturumu(), new TusIstatistikHesaplayici(),
-            new KayitFiltreleyici(), new KayitBicimleyici(), _diyalog, _dosya, _bildirici, _hata, _gunlukcu, _saat);
+            new FiltreDogrulayici(), new KayitFiltreleyici(), new SatirBicimleyici(),
+            new DosyaIcerigiOlusturucu(new SatirBicimleyici()), _diyalog, _dosya, new DosyaHatasiAciklayici(), _bildirici, _hata, _gunlukcu, _saat);
         yonetici.Hazirla();
         return yonetici;
     }
@@ -174,20 +176,48 @@ public sealed class KayitYoneticisiTestleri
 
         Assert.HasCount(1, _hata.Bildirimler);
         Assert.AreEqual(Gorunurluk.EkranVeGunluk, _hata.Bildirimler[0].Gorunurluk);
-        Assert.AreEqual("Kayıtlar dosyaya yazılamadı.", _hata.Bildirimler[0].Mesaj);
+        Assert.AreEqual("Kayıtlar dosyaya yazılamadı.\n" + @"C:\test\kayit.txt", _hata.Bildirimler[0].Mesaj);
         Assert.HasCount(4, _gorunum.Satirlar);
     }
 
     [TestMethod]
-    public void BeklenmeyenHata_YakalanirUygulamaKapanmaz()
+    public void TusHatasi_SadeceLogaGiderAdiylaBildirilir()
     {
         Hazir();
         _gorunum.BaslataBas();
         _gorunum.SatirEkleHataFirlatsin = true;
 
-        _gorunum.TusaBas("A");                     // istisna disari sizmamali
+        _gorunum.TusaBas("A");                     // istisna disari sizmamali (R6)
 
         Assert.IsNotEmpty(_hata.Bildirimler);
-        Assert.AreEqual("Beklenmeyen bir hata oluştu.", _hata.Bildirimler[0].Mesaj);
+        Assert.AreEqual(HataMesajlari.TusOlayiIslenemedi, _hata.Bildirimler[0].Mesaj);
+        Assert.AreEqual(Gorunurluk.SadeceGunluk, _hata.Bildirimler[0].Gorunurluk);
+    }
+
+    [TestMethod]
+    public void ButonHatasi_EkranaAdiylaBildirilir()
+    {
+        Hazir();
+        _gorunum.DurumGosterHataFirlatsin = true;
+
+        _gorunum.BaslataBas();
+
+        Assert.HasCount(1, _hata.Bildirimler);
+        Assert.AreEqual(HataMesajlari.KayitBaslatilamadi, _hata.Bildirimler[0].Mesaj);
+        Assert.AreEqual(Gorunurluk.EkranVeGunluk, _hata.Bildirimler[0].Gorunurluk);
+    }
+
+    [TestMethod]
+    public void KaydetmePenceresiHatasi_EkranaAdiylaBildirilir()
+    {
+        Hazir();
+        _gorunum.BaslataBas();
+        _gorunum.TusaBas("A");
+        _diyalog.HataFirlatsin = true;
+
+        _gorunum.KaydeteBas();
+
+        Assert.AreEqual(HataMesajlari.KaydetmePenceresiAcilamadi, _hata.Bildirimler[0].Mesaj);
+        Assert.IsNull(_dosya.YazilanYol);
     }
 }
