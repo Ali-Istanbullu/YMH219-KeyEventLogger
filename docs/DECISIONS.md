@@ -66,6 +66,10 @@ Ali İstanbullu — 250542019.
 | CK20 | `DosyaHatasiAciklayici`: dosya yazma hatasının sebebi kullanıcıya söylenir (izin yok / klasör yok / dosya başka programda açık / disk dolu / yol çok uzun / ad geçersiz). Bilinmeyen sebepte genel mesaj gösterilir, ayrıntı loga yazılır. Mesajın altında dosya yolu da gösterilir | bildirildi |
 | CK21 | **Klavye düzeni:** Windows tuş kodları ABD klavyesine göre adlandırılır (Türkçe Q'da `i` = OemQuotes, `ü` = Oem6). Ali çalıştırırken fark etti. Harf ve Oem tuşlarının adı, aktif klavye düzeninin ürettiği karakterden alınır (`MapVirtualKeyW`, MAPVK_VK_TO_CHAR) ve Türkçe kurala göre büyütülür: i→İ, ı→I, ü→Ü. Karşılığı yoksa Windows'un adı kullanılır | bildirildi |
 | CK22 | Basılan tuşun kendisi ek tuşsa (Shift'e basılınca) ek tuş sütununda tekrar yazılmaz | bildirildi |
+| CK23 | İkon: koyu lacivert yuvarlak kare, ortada açık renkli klavye tuşu ("K" harfi; 16 px'te harf yok), sağ üstte kırmızı kayıt noktası. 16–256 px, 7 boyut, PNG girdili ICO. `KeyEventLogger.IconGenerator` (AliBird'deki gibi araç) | bildirildi |
+| CK24 | Kurulum betiği AliBird'den uyarlandı (`installer/KeyEventLogger.iss`): Türkçe, Program Files, yönetici, x64, isteğe bağlı kısayollar, .NET 10 Desktop Runtime arka planda indirilip kurulur, başarısızsa durur (R3); kaldırınca program klasörü tamamen silinir, `%LocalAppData%\KeyEventLogger` (loglar) kalır | bildirildi |
+| CK25 | README (G8 başlıkları + güvenlik notu + Kod Sözlüğü + sınırlamalar), LICENSE MIT. Ekran görüntüleri: `docs/screenshots/kayit-acik.jpg`, `filtre.jpg`, `txt-dosyasi.jpg` | bildirildi |
+| CK26 | Kurulum dosyası Inno Setup 7.1.0 ile uyarısız derlendi: `KeyEventLogger-Kurulum-1.0.0.exe`, 2.269.990 bayt, SHA256 `8e2ca0d1c3df152bf7e2eed8c62542ac06839e9a59fa90a70290053fa9873e4a`. Release `v1.0.0` olarak yayınlanacak | bildirildi |
 
 ## 4b. Hata haritası (CK19)
 
@@ -105,8 +109,8 @@ installer/KeyEventLogger.iss           (Adım 3)
 | Adım | İş | Durum |
 |---|---|---|
 | 1 | İskelet + Core (modeller, servisler, presenter) + Core testleri | ✅ commit 86dbfa6 |
-| 2 | S düzeltmesi (CK13) + Infrastructure + WinForms + DI + testler | ⏳ yazıldı + hata kataloğu (CK19, CK20), build/test bekleniyor (Core 42 + Infra 15 = 57 test) |
-| 3 | İkon + Inno Setup + README + LICENSE + ekran görüntüleri + Release | |
+| 2 | S düzeltmesi (CK13) + Infrastructure + WinForms + DI + testler + hata kataloğu + klavye düzeni | ✅ commit'ler efb252c…4eb37a0 |
+| 3 | İkon + Inno Setup + README + LICENSE + ekran görüntüleri + Release | ⏳ yazıldı (CK23–CK25), ikon üretimi + kurulum derlemesi + ekran görüntüleri bekleniyor |
 
 ## 7. Claude'un hataları (tekrarlanmayacak)
 
