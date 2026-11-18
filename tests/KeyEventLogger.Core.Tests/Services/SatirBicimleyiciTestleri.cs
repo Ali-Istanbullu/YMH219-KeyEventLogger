@@ -4,9 +4,9 @@ using KeyEventLogger.Core.Services;
 namespace KeyEventLogger.Core.Tests.Services;
 
 [TestClass]
-public sealed class KayitBicimleyiciTestleri
+public sealed class SatirBicimleyiciTestleri
 {
-    private readonly KayitBicimleyici _bicimleyici = new();
+    private readonly SatirBicimleyici _bicimleyici = new();
 
     [TestMethod]
     public void KeyDown_TarihOlayVeTusYazilir()
@@ -34,20 +34,5 @@ public sealed class KayitBicimleyiciTestleri
         string satir = _bicimleyici.Satir(TestVerisi.Yazis(karakter));
 
         Assert.AreEqual($"18.11.2026 10:00:00.000  KeyPress  {beklenen}", satir);
-    }
-
-    [TestMethod]
-    public void DosyaMetni_BaslikFiltreVeSatirlar()
-    {
-        var filtre = new TarihAraligi(TestVerisi.Baz, TestVerisi.Baz.AddMinutes(1));
-
-        string metin = _bicimleyici.DosyaMetni([TestVerisi.Basis("A")], filtre, TestVerisi.Baz.AddHours(1));
-        string[] satirlar = metin.Split(Environment.NewLine);
-
-        Assert.AreEqual("Key Event Logger - Tuş Kayıtları", satirlar[0]);
-        Assert.AreEqual("Oluşturulma: 18.11.2026 11:00:00.000", satirlar[1]);
-        Assert.AreEqual("Filtre: 18.11.2026 10:00:00.000 - 18.11.2026 10:01:00.000", satirlar[2]);
-        Assert.AreEqual("Kayıt sayısı: 1", satirlar[3]);
-        Assert.AreEqual("18.11.2026 10:00:00.000  KeyDown   A", satirlar[5]);
     }
 }
