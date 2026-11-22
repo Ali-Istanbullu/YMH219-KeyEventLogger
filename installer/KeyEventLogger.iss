@@ -32,7 +32,10 @@ DefaultDirName={autopf}\{#UygulamaAdi}
 DefaultGroupName={#GorunenAd}
 PrivilegesRequired=admin
 ; Sadece Windows x64
-ArchitecturesAllowed=x64compatible
+; x64 Windows 10/11. Arm64 Windows reddedilir: orada x64 .NET "dotnet\x64" klasorune kurulur, test edilmedi.
+ArchitecturesAllowed=x64compatible and not arm64
+; .NET 10, Windows 7/8.1 desteklemez: kurulum orada hic baslamaz.
+MinVersion=10.0
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=Output
 OutputBaseFilename={#UygulamaAdi}-Kurulum-{#UygulamaSurumu}
