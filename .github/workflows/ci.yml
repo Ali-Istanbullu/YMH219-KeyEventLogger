@@ -2,6 +2,8 @@
 # Birim ve smoke testleri basarisizsa build kirmizi olur.
 # Performans testleri ayri adimda calisir; bulut sunucusu yavas olabilecegi icin build'i kirmaz,
 # olculen sureler adim ciktisinda gorunur.
+# Tek is (job): derleme bir kez yapilir. Derleme basariliysa test adimlarinin HEPSI calisir; biri kirmizi olsa da
+# digerleri calisir ve sonuclari gorunur (job sonunda yine kirmizi olur).
 name: CI
 
 on:
@@ -23,14 +25,18 @@ jobs:
         run: dotnet restore
 
       - name: Derle
+        id: derle
         run: dotnet build --no-restore -c Release
 
       - name: Birim testleri
+        if: ${{ !cancelled() && steps.derle.outcome == 'success' }}
         run: dotnet test --no-build -c Release --filter "TestCategory!=Smoke&TestCategory!=Performans"
 
       - name: Smoke testleri
+        if: ${{ !cancelled() && steps.derle.outcome == 'success' }}
         run: dotnet test tests/KeyEventLogger.SmokeTests --no-build -c Release
 
       - name: Performans testleri
+        if: ${{ !cancelled() && steps.derle.outcome == 'success' }}
         continue-on-error: true
         run: dotnet test tests/KeyEventLogger.PerformanceTests --no-build -c Release --logger "console;verbosity=detailed"
